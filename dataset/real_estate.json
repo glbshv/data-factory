@@ -1,0 +1,56 @@
+{
+	"name": "real_estate",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Real estate blob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "RealEstate.csv",
+				"container": "real-estate-numbers"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "No",
+				"type": "String"
+			},
+			{
+				"name": "X1 transaction date",
+				"type": "String"
+			},
+			{
+				"name": "X2 house age",
+				"type": "String"
+			},
+			{
+				"name": "X3 distance to the nearest MRT station",
+				"type": "String"
+			},
+			{
+				"name": "X4 number of convenience stores",
+				"type": "String"
+			},
+			{
+				"name": "X5 latitude",
+				"type": "String"
+			},
+			{
+				"name": "X6 longitude",
+				"type": "String"
+			},
+			{
+				"name": "Y house price of unit area",
+				"type": "String"
+			}
+		]
+	}
+}
