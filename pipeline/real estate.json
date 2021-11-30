@@ -1,6 +1,131 @@
 {
 	"name": "real estate",
 	"properties": {
+		"activities": [
+			{
+				"name": "realestate_csv_to_sql",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "No"
+								},
+								"sink": {
+									"name": "No",
+									"precision": 10
+								}
+							},
+							{
+								"source": {
+									"name": "X1 transaction date"
+								},
+								"sink": {
+									"name": "X1 transaction date"
+								}
+							},
+							{
+								"source": {
+									"name": "X2 house age"
+								},
+								"sink": {
+									"name": "X2 house age",
+									"precision": 15
+								}
+							},
+							{
+								"source": {
+									"name": "X3 distance to the nearest MRT station"
+								},
+								"sink": {
+									"name": "X3 distance to the nearest MRT station",
+									"precision": 15
+								}
+							},
+							{
+								"source": {
+									"name": "X4 number of convenience stores"
+								},
+								"sink": {
+									"name": "X4 number of convenience stores",
+									"precision": 15
+								}
+							},
+							{
+								"source": {
+									"name": "X5 latitude"
+								},
+								"sink": {
+									"name": "X5 latitude",
+									"precision": 15
+								}
+							},
+							{
+								"source": {
+									"name": "X6 longitude"
+								},
+								"sink": {
+									"name": "X6 longitude",
+									"precision": 15
+								}
+							},
+							{
+								"source": {
+									"name": "Y house price of unit area"
+								},
+								"sink": {
+									"name": "Y house price of unit area",
+									"precision": 15
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "real_estate",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "real_estate_db",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
 		"annotations": []
 	}
 }

@@ -1,0 +1,56 @@
+{
+	"name": "real_estate_db",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "glebs database on azure",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "No",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "X1 transaction date",
+				"type": "varchar"
+			},
+			{
+				"name": "X2 house age",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "X3 distance to the nearest MRT station",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "X4 number of convenience stores",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "X5 latitude",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "X6 longitude",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Y house price of unit area",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "real_estate",
+			"table": "prices"
+		}
+	}
+}
