@@ -1,0 +1,315 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "glebs-data-factory"
+		},
+		"Real estate blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Real estate blob'"
+		},
+		"glebs database on azure_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'glebs database on azure'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Real estate blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('Real estate blob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/glebs database on azure')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('glebs database on azure_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/real_estate')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Real estate blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "RealEstate.csv",
+						"container": "real-estate-numbers"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "No",
+						"type": "String"
+					},
+					{
+						"name": "X1 transaction date",
+						"type": "String"
+					},
+					{
+						"name": "X2 house age",
+						"type": "String"
+					},
+					{
+						"name": "X3 distance to the nearest MRT station",
+						"type": "String"
+					},
+					{
+						"name": "X4 number of convenience stores",
+						"type": "String"
+					},
+					{
+						"name": "X5 latitude",
+						"type": "String"
+					},
+					{
+						"name": "X6 longitude",
+						"type": "String"
+					},
+					{
+						"name": "Y house price of unit area",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Real estate blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/real_estate_db')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "glebs database on azure",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "No",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "X1 transaction date",
+						"type": "varchar"
+					},
+					{
+						"name": "X2 house age",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "X3 distance to the nearest MRT station",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "X4 number of convenience stores",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "X5 latitude",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "X6 longitude",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Y house price of unit area",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "real_estate",
+					"table": "prices"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/glebs database on azure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/real estate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "realestate_csv_to_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "No"
+										},
+										"sink": {
+											"name": "No",
+											"precision": 10
+										}
+									},
+									{
+										"source": {
+											"name": "X1 transaction date"
+										},
+										"sink": {
+											"name": "X1 transaction date"
+										}
+									},
+									{
+										"source": {
+											"name": "X2 house age"
+										},
+										"sink": {
+											"name": "X2 house age",
+											"precision": 15
+										}
+									},
+									{
+										"source": {
+											"name": "X3 distance to the nearest MRT station"
+										},
+										"sink": {
+											"name": "X3 distance to the nearest MRT station",
+											"precision": 15
+										}
+									},
+									{
+										"source": {
+											"name": "X4 number of convenience stores"
+										},
+										"sink": {
+											"name": "X4 number of convenience stores",
+											"precision": 15
+										}
+									},
+									{
+										"source": {
+											"name": "X5 latitude"
+										},
+										"sink": {
+											"name": "X5 latitude",
+											"precision": 15
+										}
+									},
+									{
+										"source": {
+											"name": "X6 longitude"
+										},
+										"sink": {
+											"name": "X6 longitude",
+											"precision": 15
+										}
+									},
+									{
+										"source": {
+											"name": "Y house price of unit area"
+										},
+										"sink": {
+											"name": "Y house price of unit area",
+											"precision": 15
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "real_estate",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "real_estate_db",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/real_estate')]",
+				"[concat(variables('factoryId'), '/datasets/real_estate_db')]"
+			]
+		}
+	]
+}
