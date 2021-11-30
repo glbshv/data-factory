@@ -1,0 +1,20 @@
+{
+	"name": "powerquery1",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "test_table",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~>  test_table",
+					"dataset": {
+						"referenceName": "test_table",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared test_table = let\r\n  AdfDoc = Sql.Database(\"glebs-server.database.windows.net\", \"glebs-database\", [CreateNavigationProperties = false]),\r\n  InputTable = AdfDoc{[Schema = \"testing\", Item = \"random_data\"]}[Data]\r\nin\r\n  InputTable;\r\nshared UserQuery = let\r\n  Source = test_table,\r\n  #\"Added custom\" = Table.AddColumn(Source, \"Gender\", each if [order] = 1 then \"female\" else \"male\"),\r\n  #\"Changed column type\" = Table.TransformColumnTypes(#\"Added custom\", {{\"Gender\", type text}})\r\nin\r\n  #\"Changed column type\";\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}
