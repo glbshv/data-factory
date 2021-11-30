@@ -1,0 +1,26 @@
+{
+	"name": "test_table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "glebs database on azure",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "person_name",
+				"type": "varchar"
+			},
+			{
+				"name": "order",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "testing",
+			"table": "random_data"
+		}
+	}
+}
