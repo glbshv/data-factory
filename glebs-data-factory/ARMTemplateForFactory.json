@@ -51,7 +51,9 @@
 								}
 							},
 							"sink": {
-								"type": "AzureSqlSink"
+								"type": "AzureSqlSink",
+								"preCopyScript": "truncate table [real_estate].[prices]",
+								"disableMetricsCollection": false
 							},
 							"enableStaging": false,
 							"translator": {
