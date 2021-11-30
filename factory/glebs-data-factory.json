@@ -1,0 +1,9 @@
+{
+	"name": "glebs-data-factory",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "2b11aa0c-24ee-4c14-b0b8-39f07fbbdde4",
+		"tenantId": "f376d0e0-e505-459d-9b65-af79103f8c95"
+	}
+}
