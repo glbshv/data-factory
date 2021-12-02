@@ -126,6 +126,51 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "data_for_analysis",
+				"type": "ExecuteWranglingDataflow",
+				"dependsOn": [
+					{
+						"activity": "realestate_csv_to_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "data_for_analysts",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"queries": [
+						{
+							"queryName": "UserQuery",
+							"dataflowSinks": [
+								{
+									"name": "Sinkrealestate_cleaned",
+									"dataset": {
+										"referenceName": "realestate_cleaned",
+										"type": "DatasetReference"
+									},
+									"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\t{House age} as double,\n\t\t{Distance to metro station} as double,\n\t\t{Number of convenience stores} as double,\n\t\t{House price per unit/area} as double\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['truncate table [real_estate].[prices_cleaned]'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\t{House age},\n\t\t{Distance to metro station},\n\t\t{Number of convenience stores},\n\t\t{House price per unit/area}\n\t)) ~> Sinkrealestate_cleaned"
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"annotations": []
