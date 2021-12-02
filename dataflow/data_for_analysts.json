@@ -1,0 +1,20 @@
+{
+	"name": "data_for_analysts",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "real_estate_db",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~>  real_estate_db",
+					"dataset": {
+						"referenceName": "real_estate_db",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared real_estate_db = let\r\n  AdfDoc = Sql.Database(\"glebs-server.database.windows.net\", \"glebs-database\", [CreateNavigationProperties = false]),\r\n  InputTable = AdfDoc{[Schema = \"real_estate\", Item = \"prices\"]}[Data]\r\nin\r\n  InputTable;\r\nshared UserQuery = let\r\n  Source = real_estate_db,\r\n  #\"Removed columns\" = Table.RemoveColumns(Source, {\"No\", \"X1 transaction date\", \"X5 latitude\", \"X6 longitude\"}),\r\n  #\"Renamed columns\" = Table.RenameColumns(#\"Removed columns\", {{\"X2 house age\", \"House age\"}, {\"X3 distance to the nearest MRT station\", \"Distance to metro station\"}, {\"X4 number of convenience stores\", \"Number of convenience stores\"}, {\"Y house price of unit area\", \"House price per unit/area\"}})\r\nin\r\n  #\"Renamed columns\";\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}
